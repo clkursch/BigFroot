@@ -1,0 +1,6 @@
+C:\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\template\plugins\Template.dll
+C:\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\template\plugins\Template.pdb
+C:\Users\connor\source\repos\Template\Plugin\obj\Debug\Template.csproj.AssemblyReference.cache
+C:\Users\connor\source\repos\Template\Plugin\obj\Debug\Template.csproj.CoreCompileInputs.cache
+C:\Users\connor\source\repos\Template\Plugin\obj\Debug\Template.dll
+C:\Users\connor\source\repos\Template\Plugin\obj\Debug\Template.pdb
