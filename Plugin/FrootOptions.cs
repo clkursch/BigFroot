@@ -16,11 +16,13 @@ public class FrootOptions : OptionInterface
     {
         //Logger = loggerSource;
         FrootOptions.spawnChance = this.config.Bind<float>("spawnChance", 0.5f, new ConfigAcceptableRange<float>(0.01f, 0.5f));
+        FrootOptions.spawnChanceWaterNut = this.config.Bind<float>("spawnChanceWaterNut", 0.5f, new ConfigAcceptableRange<float>(0.01f, 0.5f));
         FrootOptions.noVisuals = this.config.Bind<bool>("noVisuals", false);
         FrootOptions.vanillaBehavior = this.config.Bind<bool>("vanillaBehavior", true);
     }
 
     public static Configurable<float> spawnChance;
+    public static Configurable<float> spawnChanceWaterNut;
     public static Configurable<bool> noVisuals;
     public static Configurable<bool> vanillaBehavior;
 
@@ -69,5 +71,16 @@ public class FrootOptions : OptionInterface
             new OpLabel(pZoomOp.pos.x - 20, pZoomOp.pos.y - 15, Translate("Spawn Chance"), bigText: false)
             {alignment = FLabelAlignment.Center}
         });
+
+
+        lineCount -= 75;
+        dsc = Translate("Bubble Fruit");
+        Tabs[0].AddItems(new UIelement[]
+        {
+            pZoomOp = new OpFloatSlider(FrootOptions.spawnChanceWaterNut, new Vector2(margin + 0, lineCount), barLngtInt, 2, false) {description = dsc},
+            new OpLabel(pZoomOp.pos.x - 20, pZoomOp.pos.y - 15, dsc, bigText: false)
+            {alignment = FLabelAlignment.Center}
+        });
+
     }
 }
