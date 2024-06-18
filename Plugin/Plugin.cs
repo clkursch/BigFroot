@@ -7,7 +7,6 @@ using UnityEngine;
 using MoreSlugcats;
 using RWCustom;
 using System.Runtime.CompilerServices;
-using static PhysicalObject;
 
 #pragma warning disable CS0618
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
@@ -15,7 +14,7 @@ using static PhysicalObject;
 
 namespace BigFroot;
 
-[BepInPlugin("willowwisp.bigfroot", "Big Froot", "1.1.0")]
+[BepInPlugin("willowwisp.bigfroot", "Big Froot", "1.1.1")]
 
 
 
@@ -69,6 +68,8 @@ public class BigFroot : BaseUnityPlugin
             #endregion
             #region glow weed
             On.MoreSlugcats.GlowWeed.ctor += GlowWeed_ctor;
+            On.MoreSlugcats.GlowWeed.Update += GlowWeed_Update;
+            On.PhysicalObject.TerrainImpact += GlowWeed_TerrainImpact;
             On.MoreSlugcats.GlowWeed.BitByPlayer += GlowWeed_BitByPlayer;
             On.MoreSlugcats.GlowWeed.InitiateSprites += GlowWeed_InitiateSprites;
             On.MoreSlugcats.GlowWeed.DrawSprites += GlowWeed_DrawSprites;
@@ -179,7 +180,7 @@ public class BigFroot : BaseUnityPlugin
             self.bodyChunks[0].mass *= 2f;
         }
     }
-
+    //extra damage
     private bool WaterNut_HitSomething(On.Rock.orig_HitSomething orig, Rock self, SharedPhysics.CollisionResult result, bool eu)
     {
         //theres gotta be a better way...................
@@ -206,7 +207,8 @@ public class BigFroot : BaseUnityPlugin
                 {
                     stunBonus = 90f;
                 }
-                (result.obj as Creature).Violence(self.firstChunk, self.firstChunk.vel * self.firstChunk.mass, result.chunk, result.onAppendagePos, Creature.DamageType.Blunt, 0.5f, stunBonus); //all this just to change the damage value...
+                //all this just to change the damage value...
+                (result.obj as Creature).Violence(self.firstChunk, self.firstChunk.vel * self.firstChunk.mass, result.chunk, result.onAppendagePos, Creature.DamageType.Blunt, 0.5f, stunBonus); 
             }
             else if (result.chunk != null)
             {
@@ -214,7 +216,7 @@ public class BigFroot : BaseUnityPlugin
             }
             else if (result.onAppendagePos != null)
             {
-                (result.obj as IHaveAppendages).ApplyForceOnAppendage(result.onAppendagePos, self.firstChunk.vel * self.firstChunk.mass);
+                (result.obj as PhysicalObject.IHaveAppendages).ApplyForceOnAppendage(result.onAppendagePos, self.firstChunk.vel * self.firstChunk.mass);
             }
             self.firstChunk.vel = self.firstChunk.vel * -0.5f + Custom.DegToVec(Random.value * 360f) * Mathf.Lerp(0.1f, 0.4f, Random.value) * self.firstChunk.vel.magnitude;
             self.room.PlaySound(SoundID.Rock_Hit_Creature, self.firstChunk);
@@ -255,7 +257,7 @@ public class BigFroot : BaseUnityPlugin
             self.color = Color.Lerp(new Color(0.4f, 0f, 1f), palette.blackColor, Mathf.Lerp(0f, 0.5f, rCam.PaletteDarkness()));
         }
     }
-
+    //make sure big rocks always pop into big bubbles
     private void WaterNut_Swell(On.WaterNut.orig_Swell orig, WaterNut self)
     {
         if (self.GetFroot().isJumbo)
@@ -331,8 +333,7 @@ public class BigFroot : BaseUnityPlugin
 
     private void SwollenWaterNut_DrawSprites(On.SwollenWaterNut.orig_DrawSprites orig, SwollenWaterNut self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        orig(self, sLeaser, rCam, timeStacker, camPos);
-
+        //its a bit more complicated than just changing the pallete because of the squishing animation :/
         if (self.GetFroot().isJumbo && !FrootOptions.noVisuals.Value)
         {
             Vector2 pos = Vector2.Lerp(self.firstChunk.lastPos, self.firstChunk.pos, timeStacker);
@@ -394,7 +395,7 @@ public class BigFroot : BaseUnityPlugin
         if (self.GetFroot().isJumbo && !FrootOptions.noVisuals.Value)
         {
             self.bodyChunks[0].mass *= 2f;
-            self.bites = 6; //hardcoded nonsense >:(
+            self.bites = 6; //hardcoded nonsense :(
         }
     }
 
@@ -493,11 +494,8 @@ public class BigFroot : BaseUnityPlugin
 
     private void LillyPuck_Thrown(On.MoreSlugcats.LillyPuck.orig_Thrown orig, LillyPuck self, Creature thrownBy, Vector2 thrownPos, Vector2? firstFrameTraceFromPos, IntVector2 throwDir, float frc, bool eu)
     {
-        //orig(self, thrownBy, thrownPos, firstFrameTraceFromPos, throwDir, frc, eu);
-
-
-        //self.Thrown(thrownBy, thrownPos, firstFrameTraceFromPos, throwDir, frc, eu); //helpppppppp
-        //how do i call the base virtual method helpppppppppppppppppppp
+        //base.Thrown(thrownBy, thrownPos, firstFrameTraceFromPos, throwDir, frc, eu);
+        #region how do i call the base virtual method helpppppppppppppppppppp
         self.thrownBy = thrownBy;
         self.thrownPos = thrownPos;
         self.throwDir = throwDir;
@@ -510,7 +508,7 @@ public class BigFroot : BaseUnityPlugin
             self.firstChunk.vel.y = thrownBy.mainBodyChunk.vel.y * 0.5f;
             self.firstChunk.vel.x = thrownBy.mainBodyChunk.vel.x * 0.2f;
             self.firstChunk.vel.x += (float)throwDir.x * 40f * frc;
-            self.firstChunk.vel.y += ((self is Spear) ? 1.5f : 3f);
+            self.firstChunk.vel.y += ((self is Spear) ? 1.5f : 3f); // I KNOW SHUT UP!!!!!
         }
         else
         {
@@ -534,8 +532,7 @@ public class BigFroot : BaseUnityPlugin
         self.setRotation = throwDir.ToVector2();
         self.rotationSpeed = 0f;
         self.meleeHitChunk = null;
-
-
+        #endregion
 
         if (self.AbstrLillyPuck.bites >= 3) //all this just to change this one operator -_- talk about compromising compatibility right?
         {
@@ -678,11 +675,60 @@ public class BigFroot : BaseUnityPlugin
     private void GlowWeed_ctor(On.MoreSlugcats.GlowWeed.orig_ctor orig, GlowWeed self, AbstractPhysicalObject abstractPhysicalObject)
     {
         orig(self, abstractPhysicalObject);
-
         if (self.GetFroot().isJumbo && !FrootOptions.noVisuals.Value)
         {
-            self.bodyChunks[0].mass *= 2f;
+            self.bodyChunks[0].mass *= 3f;
             self.bites = 6;
+            self.bounce = 0.4f;
+        }
+    }
+
+    private void GlowWeed_Update(On.MoreSlugcats.GlowWeed.orig_Update orig, GlowWeed self, bool eu)
+    {
+        orig(self, eu);
+        //make glow weed squishy!
+        self.GetFroot().lastProp = self.GetFroot().prop;
+        self.GetFroot().prop += self.GetFroot().propSpeed;
+        self.GetFroot().propSpeed *= 0.85f;
+        self.GetFroot().propSpeed -= self.GetFroot().prop / 10f;
+        self.GetFroot().prop = Mathf.Clamp(self.GetFroot().prop, -15f, 15f);
+        if (self.grabbedBy.Count == 0)
+        {
+            self.GetFroot().prop += (self.firstChunk.lastPos.x - self.firstChunk.pos.x) / 15f;
+            self.GetFroot().prop -= (self.firstChunk.lastPos.y - self.firstChunk.pos.y) / 15f;
+        }
+        self.GetFroot().lastPlop = self.GetFroot().plop;
+        if (self.GetFroot().plop > 0f && self.GetFroot().plop < 1f)
+        {
+            self.GetFroot().plop = Mathf.Min(1f, self.GetFroot().plop + 0.1f);
+        }
+    }
+
+    private void GlowWeed_TerrainImpact(On.PhysicalObject.orig_TerrainImpact orig, PhysicalObject self, int chunk, IntVector2 direction, float speed, bool firstContact)
+    {
+        //make glow weed squishy!
+        orig(self, chunk, direction, speed, firstContact);
+        if (self is GlowWeed)
+        {
+            if (direction.y != 0)
+            {
+                (self as GlowWeed).GetFroot().prop += speed;
+                (self as GlowWeed).GetFroot().propSpeed += speed / 10f;
+            }
+            else
+            {
+                (self as GlowWeed).GetFroot().prop -= speed;
+                (self as GlowWeed).GetFroot().propSpeed -= speed / 10f;
+            }
+            if (speed > 1.2f && firstContact)
+            {
+                Vector2 pos = (self as GlowWeed).firstChunk.pos + direction.ToVector2() * (self as GlowWeed).firstChunk.rad;
+                for (int i = 0; i < Mathf.RoundToInt(Custom.LerpMap(speed, 1.2f, 6f, 2f, 5f, 1.2f)); i++)
+                {
+                    (self as GlowWeed).room.AddObject(new WaterDrip(pos, Custom.RNV() * (2f + speed) * UnityEngine.Random.value * 0.5f + -direction.ToVector2() * (3f + speed) * 0.35f, waterColor: true));
+                }
+                (self as GlowWeed).room.PlaySound(SoundID.Swollen_Water_Nut_Terrain_Impact, pos, Custom.LerpMap(speed, 1.2f, 6f, 0.2f, 1f), 1f);
+            }
         }
     }
 
@@ -723,6 +769,7 @@ public class BigFroot : BaseUnityPlugin
         }
     }
 
+    //full rewrite of the drawing function to make them squish!
     private void GlowWeed_DrawSprites(On.MoreSlugcats.GlowWeed.orig_DrawSprites orig, GlowWeed self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         if (self.GetFroot().isJumbo && !FrootOptions.noVisuals.Value)
@@ -736,8 +783,10 @@ public class BigFroot : BaseUnityPlugin
             sLeaser.sprites[0].y = vector.y - camPos.y;
             sLeaser.sprites[0].rotation = Custom.VecToDeg(vector2);
             sLeaser.sprites[0].alpha = 0.6f + rCam.PaletteDarkness() / 2f;
-            sLeaser.sprites[0].scaleX = 1.2f * scaleX * num;
-            sLeaser.sprites[0].scaleY = 1.6f * scaleY * num;
+            float num2 = Mathf.Lerp(self.GetFroot().lastPlop, self.GetFroot().plop, timeStacker);
+            num2 = Mathf.Lerp(0f, 1f + Mathf.Sin(num2 * (float)System.Math.PI), num2);
+            sLeaser.sprites[0].scaleX = (1.2f * scaleX * num + Mathf.Lerp(self.GetFroot().lastProp, self.GetFroot().prop, timeStacker) / 20f) * num2;
+            sLeaser.sprites[0].scaleY = (1.6f * scaleY * num - Mathf.Lerp(self.GetFroot().lastProp, self.GetFroot().prop, timeStacker) / 20f) * num2;
             sLeaser.sprites[1].x = vector.x - camPos.x;
             sLeaser.sprites[1].y = vector.y - camPos.y;
             sLeaser.sprites[1].rotation = Custom.VecToDeg(vector2);
@@ -776,7 +825,55 @@ public class BigFroot : BaseUnityPlugin
         }
         else
         {
-            orig(self, sLeaser, rCam, timeStacker, camPos);
+            //orig(self, sLeaser, rCam, timeStacker, camPos);
+            float num = (float)self.bites / 3f;
+            Vector2 vector = Vector2.Lerp(self.firstChunk.lastPos, self.firstChunk.pos, timeStacker);
+            Vector2 vector2 = Vector3.Slerp(self.lastRotation, self.rotation, timeStacker);
+            sLeaser.sprites[0].x = vector.x - camPos.x;
+            sLeaser.sprites[0].y = vector.y - camPos.y;
+            sLeaser.sprites[0].rotation = Custom.VecToDeg(vector2);
+            sLeaser.sprites[0].alpha = 0.6f + rCam.PaletteDarkness() / 2f;
+            sLeaser.sprites[0].scaleX = 1.2f * num;
+            sLeaser.sprites[0].scaleY = 1.6f * num;
+            float num2 = Mathf.Lerp(self.GetFroot().lastPlop, self.GetFroot().plop, timeStacker);
+            num2 = Mathf.Lerp(0f, 1f + Mathf.Sin(num2 * (float)System.Math.PI), num2);
+            sLeaser.sprites[0].scaleX = (1.2f * num + Mathf.Lerp(self.GetFroot().lastProp, self.GetFroot().prop, timeStacker) / 20f) * num2;
+            sLeaser.sprites[0].scaleY = (1.6f * num - Mathf.Lerp(self.GetFroot().lastProp, self.GetFroot().prop, timeStacker) / 20f) * num2;
+            sLeaser.sprites[1].x = vector.x - camPos.x;
+            sLeaser.sprites[1].y = vector.y - camPos.y;
+            sLeaser.sprites[1].rotation = Custom.VecToDeg(vector2);
+            sLeaser.sprites[1].scaleX = 0.9f * num;
+            sLeaser.sprites[1].scaleY = 1.3f * num;
+            sLeaser.sprites[2].x = vector.x - camPos.x;
+            sLeaser.sprites[2].y = vector.y - camPos.y;
+            sLeaser.sprites[2].rotation = Custom.VecToDeg(vector2);
+            sLeaser.sprites[2].scaleX = 0.9f * num;
+            sLeaser.sprites[2].scaleY = 1.3f * num;
+            if (self.blink > 0 && UnityEngine.Random.value < 0.5f)
+            {
+                sLeaser.sprites[1].color = self.blinkColor;
+                sLeaser.sprites[2].color = self.blinkColor;
+                sLeaser.sprites[3].color = self.blinkColor;
+                sLeaser.sprites[4].color = self.blinkColor;
+            }
+            else
+            {
+                sLeaser.sprites[1].color = self.color;
+                sLeaser.sprites[2].color = self.color;
+                sLeaser.sprites[3].color = Color.Lerp(self.color, rCam.currentPalette.blackColor, 0.4f);
+                sLeaser.sprites[4].color = Color.Lerp(self.color, rCam.currentPalette.blackColor, 0.4f);
+            }
+            vector2 = Custom.DirVec(default(Vector2), vector2);
+            sLeaser.sprites[3].x = vector.x + vector2.x * (10f * num) - camPos.x;
+            sLeaser.sprites[3].y = vector.y + vector2.y * (10f * num) - camPos.y;
+            sLeaser.sprites[3].rotation = sLeaser.sprites[0].rotation;
+            sLeaser.sprites[4].x = vector.x + vector2.x * (-10f * num) - camPos.x;
+            sLeaser.sprites[4].y = vector.y + vector2.y * (-10f * num) - camPos.y;
+            sLeaser.sprites[4].rotation = sLeaser.sprites[0].rotation;
+            if (self.slatedForDeletetion || self.room != rCam.room)
+            {
+                sLeaser.CleanSpritesAndRemove();
+            }
         }
     }
 
@@ -814,16 +911,44 @@ public static class FrootStatusClass
     {
         public bool isJumbo;
 
+        public float prop;
+
+        public float lastProp;
+
+        public float propSpeed;
+
+        public float plop;
+
+        public float lastPlop;
+
         public FrootStatus(PlayerCarryableItem fruit)
         {
-            Random.State state = Random.state;
-            Random.InitState(fruit.abstractPhysicalObject.ID.RandomSeed);
+            if (fruit is DangleFruit or WaterNut or SwollenWaterNut or GooieDuck or LillyPuck or DandelionPeach or GlowWeed) //should this even be checked for??
+            {
+                Random.State state = Random.state;
+                Random.InitState(fruit.abstractPhysicalObject.ID.RandomSeed);
 
-            // UnityEngine.Random.seed = self.abstractPhysicalObject.ID.RandomSeed;
-            if (UnityEngine.Random.value < FrootOptions.spawnChance.Value) //0.05f)
-                this.isJumbo = true;
-
-            Random.state = state;
+                // UnityEngine.Random.seed = self.abstractPhysicalObject.ID.RandomSeed;
+                if (fruit is DangleFruit)
+                    this.isJumbo = UnityEngine.Random.value < FrootOptions.spawnChanceDangleFruit.Value;
+                if (fruit is WaterNut or SwollenWaterNut)
+                    this.isJumbo = UnityEngine.Random.value < FrootOptions.spawnChanceWaterNut.Value;
+                if (fruit is GooieDuck)
+                    this.isJumbo = UnityEngine.Random.value < FrootOptions.spawnChanceGooieDuck.Value;
+                if (fruit is LillyPuck)
+                    this.isJumbo = UnityEngine.Random.value < FrootOptions.spawnChanceLillyPuck.Value;
+                if (fruit is DandelionPeach)
+                    this.isJumbo = UnityEngine.Random.value < FrootOptions.spawnChanceDandelionPeach.Value;
+                if (fruit is GlowWeed)
+                {
+                    this.prop = 0f;
+                    this.lastProp = 0f;
+                    this.plop = 1f;
+                    this.lastPlop = 1f;
+                    this.isJumbo = UnityEngine.Random.value < FrootOptions.spawnChanceGlowWeed.Value;
+                }
+                Random.state = state;
+            }
         }
     }
 
