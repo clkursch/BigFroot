@@ -15,13 +15,15 @@ public class FrootOptions : OptionInterface
     public FrootOptions() //(BigFroot modInstance, ManualLogSource loggerSource)
     {
         //Logger = loggerSource;
-        FrootOptions.spawnChance = this.config.Bind<float>("spawnChance", 0.05f, new ConfigAcceptableRange<float>(0.01f, 0.5f));
+        FrootOptions.spawnChance = this.config.Bind<float>("spawnChance", 0.5f, new ConfigAcceptableRange<float>(0.01f, 0.5f));
         FrootOptions.noVisuals = this.config.Bind<bool>("noVisuals", false);
+        FrootOptions.vanillaBehavior = this.config.Bind<bool>("vanillaBehavior", true);
     }
 
     public static Configurable<float> spawnChance;
     public static Configurable<bool> noVisuals;
-    
+    public static Configurable<bool> vanillaBehavior;
+
 
     private UIelement[] UIArrPlayerOptions;
 
@@ -58,8 +60,7 @@ public class FrootOptions : OptionInterface
             {alignment = FLabelAlignment.Center},
         });
 
-        
-		lineCount -= 75;
+        lineCount -= 75;
         dsc = Translate("How likely it is for a normal blue fruit to spawn as a big fruit");
         int barLngtInt = 500;
         Tabs[0].AddItems(new UIelement[]

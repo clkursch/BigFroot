@@ -1,0 +1,8 @@
+C:\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\BigFroot\newest\plugins\BigFroot.dll
+C:\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\BigFroot\newest\plugins\BigFroot.pdb
+C:\Users\pc\Documents\My Games\BigFroots\Plugin\obj\Debug\BigFroots.csproj.AssemblyReference.cache
+C:\Users\pc\Documents\My Games\BigFroots\Plugin\obj\Debug\BigFroots.csproj.CoreCompileInputs.cache
+C:\Users\pc\Documents\My Games\BigFroots\Plugin\obj\Debug\BigFroot.dll
+C:\Users\pc\Documents\My Games\BigFroots\Plugin\obj\Debug\BigFroot.pdb
+C:\Users\pc\Documents\My Games\BigFroots\mod\plugins\BigFroot.dll
+C:\Users\pc\Documents\My Games\BigFroots\mod\plugins\BigFroot.pdb
