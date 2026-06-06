@@ -46,7 +46,7 @@ public class FrootOptions : OptionInterface
     {
         base.Initialize();
         var opTab = new OpTab(this, "Options");
-        var chanceTab = new OpTab(this, "Spawn Chances");
+        //var chanceTab = new OpTab(this, "Spawn Chances");
         this.Tabs = new[]
         {
             opTab
@@ -70,10 +70,11 @@ public class FrootOptions : OptionInterface
             {description = dsc},
             new OpLabel(mpBox1.pos.x + 30, mpBox1.pos.y+3, Translate("Disable visuals"))
             {description = dsc},
-            new OpLabel(165, 575, Translate("Big Froot Options"), bigText: true)
+            new OpLabel(175, 575, Translate("Big Froot Options"), bigText: true)
             {alignment = FLabelAlignment.Center},
         });
 
+        /*
         lineCount -= 75;
         dsc = Translate("Disable swelling after eating a big fruit (requires Rotund World)");
         Tabs[0].AddItems(new UIelement[]
@@ -83,11 +84,10 @@ public class FrootOptions : OptionInterface
             new OpLabel(mpBox1.pos.x + 30, mpBox1.pos.y+3, Translate("Disable swelling"))
             {description = dsc}
         });
-
+        */
 
         //spawn chance tab
-        lineCount = 580;
-        lineCount -= 60;
+        lineCount -= 100;
         dsc = Translate("How likely it is for Blue Fruits to be big");
         int barLngtInt = 500;
         Tabs[0].AddItems(new UIelement[]
@@ -96,11 +96,11 @@ public class FrootOptions : OptionInterface
             {description = dsc},
             new OpLabel(pZoomOp.pos.x - 20, pZoomOp.pos.y - 15, Translate("Blue Fruit"), bigText: false)
             {alignment = FLabelAlignment.Center},
-            new OpLabel(165, 575, Translate("Spawn Chances"), bigText: true)
+            new OpLabel(195, pZoomOp.pos.y + 40, Translate("Spawn Chances"), bigText: true)
             {alignment = FLabelAlignment.Center},
         });
 
-        lineCount -= 75;
+        lineCount -= 60;
         dsc = Translate("How likely it is for Bubble Fruits to be big");
         Tabs[0].AddItems(new UIelement[]
         {
@@ -110,7 +110,7 @@ public class FrootOptions : OptionInterface
             {alignment = FLabelAlignment.Center}
         });
 
-        lineCount -= 75;
+        lineCount -= 60;
         dsc = Translate("How likely it is for Gooieducks to be big");
         Tabs[0].AddItems(new UIelement[]
         {
@@ -120,7 +120,7 @@ public class FrootOptions : OptionInterface
             {alignment = FLabelAlignment.Center}
         });
 
-        lineCount -= 75;
+        lineCount -= 60;
         dsc = Translate("How likely it is for Lilypucks to be big");
         Tabs[0].AddItems(new UIelement[]
         {
@@ -130,7 +130,7 @@ public class FrootOptions : OptionInterface
             {alignment = FLabelAlignment.Center}
         });
 
-        lineCount -= 75;
+        lineCount -= 60;
         dsc = Translate("How likely it is for Dandelion Peaches to be big");
         Tabs[0].AddItems(new UIelement[]
         {
@@ -140,7 +140,7 @@ public class FrootOptions : OptionInterface
             {alignment = FLabelAlignment.Center}
         });
 
-        lineCount -= 75;
+        lineCount -= 60;
         dsc = Translate("How likely it is for Glow Weed to be big");
         Tabs[0].AddItems(new UIelement[]
         {
