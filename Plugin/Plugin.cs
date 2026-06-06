@@ -38,7 +38,7 @@ public class BigFroot : BaseUnityPlugin
             On.WaterNut.ctor += WaterNut_ctor;
             On.WaterNut.InitiateSprites += WaterNut_InitiateSprites;
             On.WaterNut.ApplyPalette += WaterNut_ApplyPalette;
-            On.WaterNut.Swell += WaterNut_Swell;
+            //On.WaterNut.Swell += WaterNut_Swell;
             On.Rock.HitSomething += WaterNut_HitSomething;
             On.SwollenWaterNut.ctor += SwollenWaterNut_ctor;
             On.SwollenWaterNut.BitByPlayer += SwollenWaterNut_BitByPlayer;
@@ -257,40 +257,14 @@ public class BigFroot : BaseUnityPlugin
             self.color = Color.Lerp(new Color(0.4f, 0f, 1f), palette.blackColor, Mathf.Lerp(0f, 0.5f, rCam.PaletteDarkness()));
         }
     }
-    //make sure big rocks always pop into big bubbles
-    private void WaterNut_Swell(On.WaterNut.orig_Swell orig, WaterNut self)
-    {
-        if (self.GetFroot().isJumbo)
-        {
-            if (self.grabbedBy.Count > 0)
-            {
-                self.grabbedBy[0].Release();
-            }
-            self.AbstrNut.swollen = true;
-            self.room.PlaySound(SoundID.Water_Nut_Swell, self.firstChunk.pos);
-            SwollenWaterNut swollenWaterNut = new SwollenWaterNut(self.abstractPhysicalObject);
-            swollenWaterNut.plop = 0.01f;
-            swollenWaterNut.lastPlop = 0f;
-            swollenWaterNut.rotation = self.rotation;
-            swollenWaterNut.lastRotation = self.lastRotation;
-            swollenWaterNut.addAbstractEntity = true;
-            self.room.AddObject(swollenWaterNut);
-            swollenWaterNut.GetFroot().isJumbo = true; // man.
-            swollenWaterNut.firstChunk.HardSetPosition(self.firstChunk.pos);
-            swollenWaterNut.AbstrConsumable.isFresh = self.AbstrNut.isFresh;
-            self.Destroy();
-        }
-        else
-        {
-            orig(self);
-        }
-    }
+    
 
     private void SwollenWaterNut_ctor(On.SwollenWaterNut.orig_ctor orig, SwollenWaterNut self, AbstractPhysicalObject abstractPhysicalObject)
     {
         orig(self, abstractPhysicalObject);
 
-        if (self.GetFroot().isJumbo && !FrootOptions.noVisuals.Value)
+        //JUST CHECK IF THE PARENT WAS JUMBO
+        if (abstractPhysicalObject.realizedObject is WaterNut nut && nut.GetFroot().isJumbo && !FrootOptions.noVisuals.Value)
         {
             self.bodyChunks[0].mass *= 2f;
             self.bites = 6;
@@ -334,44 +308,13 @@ public class BigFroot : BaseUnityPlugin
     private void SwollenWaterNut_DrawSprites(On.SwollenWaterNut.orig_DrawSprites orig, SwollenWaterNut self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         //its a bit more complicated than just changing the pallete because of the squishing animation :/
+        
+        orig(self, sLeaser, rCam, timeStacker, camPos);
+
+        //HERE THIS IS WAY SIMPLER
         if (self.GetFroot().isJumbo && !FrootOptions.noVisuals.Value)
         {
-            Vector2 pos = Vector2.Lerp(self.firstChunk.lastPos, self.firstChunk.pos, timeStacker);
-            Vector2 v = Vector3.Slerp(self.lastRotation, self.rotation, timeStacker);
-            self.lastDarkness = self.darkness;
-            self.darkness = rCam.room.Darkness(pos) * (1f - rCam.room.LightSourceExposure(pos));
-            if (self.darkness != self.lastDarkness)
-            {
-                self.ApplyPalette(sLeaser, rCam, rCam.currentPalette);
-            }
-            for (int i = 0; i < 3; i++)
-            {
-                sLeaser.sprites[i].x = pos.x - camPos.x;
-                sLeaser.sprites[i].y = pos.y - camPos.y;
-            }
-            sLeaser.sprites[0].rotation = Custom.VecToDeg(v);
-            sLeaser.sprites[1].rotation = Custom.VecToDeg(v);
-            sLeaser.sprites[2].alpha = (1f - self.darkness) * (1f - self.firstChunk.submersion);
-            float num = Mathf.Lerp(self.lastPlop, self.plop, timeStacker);
-            num = Mathf.Lerp(0f, 1f + Mathf.Sin(num * (float)System.Math.PI), num);
-            sLeaser.sprites[2].scaleX = (1.9f * Custom.LerpMap(self.bites, 6f, 1f, 1f, 0.2f) * 1f + Mathf.Lerp(self.lastProp, self.prop, timeStacker) / 20f) * num;
-            sLeaser.sprites[2].scaleY = (1.95f * Custom.LerpMap(self.bites, 6f, 1f, 1f, 0.2f) * 1f - Mathf.Lerp(self.lastProp, self.prop, timeStacker) / 20f) * num;
-            if (self.blink > 0 && UnityEngine.Random.value < 0.5f)
-            {
-                sLeaser.sprites[0].color = new Color(1f, 1f, 1f);
-            }
-            else
-            {
-                sLeaser.sprites[0].color = self.color;
-            }
-            if (self.slatedForDeletetion || self.room != rCam.room)
-            {
-                sLeaser.CleanSpritesAndRemove();
-            }
-        }
-        else
-        {
-            orig(self, sLeaser, rCam, timeStacker, camPos);
+            sLeaser.sprites[2].scale += 0.7f;
         }
     }
 
