@@ -49,8 +49,8 @@ public class FrootOptions : OptionInterface
         var chanceTab = new OpTab(this, "Spawn Chances");
         this.Tabs = new[]
         {
-            opTab,
-            chanceTab
+            opTab
+            //chanceTab
         };
 
 
@@ -90,7 +90,7 @@ public class FrootOptions : OptionInterface
         lineCount -= 60;
         dsc = Translate("How likely it is for Blue Fruits to be big");
         int barLngtInt = 500;
-        Tabs[1].AddItems(new UIelement[]
+        Tabs[0].AddItems(new UIelement[]
         {
             pZoomOp = new OpFloatSlider(FrootOptions.spawnChanceDangleFruit, new Vector2(margin + 0, lineCount), barLngtInt, 2, false)
             {description = dsc},
@@ -102,7 +102,7 @@ public class FrootOptions : OptionInterface
 
         lineCount -= 75;
         dsc = Translate("How likely it is for Bubble Fruits to be big");
-        Tabs[1].AddItems(new UIelement[]
+        Tabs[0].AddItems(new UIelement[]
         {
             pZoomOp = new OpFloatSlider(FrootOptions.spawnChanceWaterNut, new Vector2(margin + 0, lineCount), barLngtInt, 2, false)
             {description = dsc},
@@ -112,7 +112,7 @@ public class FrootOptions : OptionInterface
 
         lineCount -= 75;
         dsc = Translate("How likely it is for Gooieducks to be big");
-        Tabs[1].AddItems(new UIelement[]
+        Tabs[0].AddItems(new UIelement[]
         {
             pZoomOp = new OpFloatSlider(FrootOptions.spawnChanceGooieDuck, new Vector2(margin + 0, lineCount), barLngtInt, 2, false)
             {description = dsc},
@@ -122,7 +122,7 @@ public class FrootOptions : OptionInterface
 
         lineCount -= 75;
         dsc = Translate("How likely it is for Lilypucks to be big");
-        Tabs[1].AddItems(new UIelement[]
+        Tabs[0].AddItems(new UIelement[]
         {
             pZoomOp = new OpFloatSlider(FrootOptions.spawnChanceLillyPuck, new Vector2(margin + 0, lineCount), barLngtInt, 2, false)
             {description = dsc},
@@ -132,7 +132,7 @@ public class FrootOptions : OptionInterface
 
         lineCount -= 75;
         dsc = Translate("How likely it is for Dandelion Peaches to be big");
-        Tabs[1].AddItems(new UIelement[]
+        Tabs[0].AddItems(new UIelement[]
         {
             pZoomOp = new OpFloatSlider(FrootOptions.spawnChanceDandelionPeach, new Vector2(margin + 0, lineCount), barLngtInt, 2, false)
             {description = dsc},
@@ -142,7 +142,7 @@ public class FrootOptions : OptionInterface
 
         lineCount -= 75;
         dsc = Translate("How likely it is for Glow Weed to be big");
-        Tabs[1].AddItems(new UIelement[]
+        Tabs[0].AddItems(new UIelement[]
         {
             pZoomOp = new OpFloatSlider(FrootOptions.spawnChanceGlowWeed, new Vector2(margin + 0, lineCount), barLngtInt, 2, false)
             {description = dsc},

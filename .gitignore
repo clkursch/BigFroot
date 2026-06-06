@@ -364,3 +364,7 @@ FodyWeavers.xsd
 
 .idea/
 *.cache
+*.cache
+/.vs/BigFroot/v17
+/Plugin/obj/Debug
+/Plugin/obj/Debug
